@@ -14,29 +14,14 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "booking_review")
-public class Review {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Review extends BaseModel {
 
     @Column(name = "review_content", nullable = false)
     private String reviewContent;
 
     @Column(name = "rating")
     private Double rating;
-
-    @Column(name = "created_at",nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @CreatedDate // this annotation tells that only handle it for object creation
-    private Date createdAt;
-
-    @Column(name = "updated_at",nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @LastModifiedDate // this annotation tells that only handle it for object update
-    private Date updatedAt;
 
     @Override
     public String toString() {
