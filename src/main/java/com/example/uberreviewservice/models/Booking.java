@@ -14,7 +14,7 @@ import java.util.Date;
 @Entity
 public class Booking extends BaseModel{
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = CascadeType.MERGE)
     private Review review;
 
     @Enumerated(value = EnumType.STRING)
@@ -27,5 +27,11 @@ public class Booking extends BaseModel{
     private Date endTime;
 
     private Long totalDistance;
+
+    @ManyToOne
+    private Driver driver;
+
+    @ManyToOne
+    private Passenger passenger;
 
 }
