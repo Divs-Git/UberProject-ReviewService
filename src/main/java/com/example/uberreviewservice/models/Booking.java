@@ -15,9 +15,6 @@ import java.util.List;
 @Entity
 public class Booking extends BaseModel{
 
-    @OneToOne(cascade = CascadeType.MERGE)
-    private Review review;
-
     @Enumerated(value = EnumType.STRING)
     private BookingStatus bookingStatus;
 
