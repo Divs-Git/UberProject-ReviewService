@@ -1,12 +1,16 @@
 package com.example.uberreviewservice.services;
 
+import com.example.uberreviewservice.models.Booking;
 import com.example.uberreviewservice.models.Driver;
 import com.example.uberreviewservice.repositories.BookingRepository;
 import com.example.uberreviewservice.repositories.DriverRepository;
 import com.example.uberreviewservice.repositories.ReviewRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,6 +28,7 @@ public class ReviewService implements CommandLineRunner {
     }
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         System.out.println("***********************");
 
@@ -49,7 +54,17 @@ public class ReviewService implements CommandLineRunner {
 //        Optional<Driver> driver = driverRepository.findByIdAndLicenseNumber(1L, "DL12344");
 //        driver.ifPresent(value -> System.out.println(value.getName()));
 
-        Optional<Driver> driver = driverRepository.hqFindByIdAndLicense(1L, "DL12344");
-        driver.ifPresent((d) -> System.out.println(d.getName()));
+//        Optional<Driver> driver = driverRepository.hqFindByIdAndLicense(1L, "DL12344");
+//        driver.ifPresent((d) -> System.out.println(d.getName()));
+
+        List<Long> driverIds = Arrays.asList(1L,2L,3L,4L);
+        List<Driver> drivers = driverRepository.findAllByIdIn(driverIds);
+//
+//        List<Booking> bookings = bookingRepository.findAllByIdIn(drivers);
+
+        for(Driver driver: drivers) {
+            List<Booking> bookings = driver.getBookings();
+            bookings.forEach(booking -> System.out.println(booking.getId()));
+        }
     }
 }

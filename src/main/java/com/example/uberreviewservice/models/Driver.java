@@ -1,10 +1,9 @@
 package com.example.uberreviewservice.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +23,6 @@ public class Driver extends BaseModel{
 
     // 1 : n -> Driver: bookings
     @OneToMany(mappedBy = "driver")
-    private List<Booking> bookings = new ArrayList<>();
-
+    @Fetch(FetchMode.SUBSELECT)
+    private List<Booking> bookings;
 }
