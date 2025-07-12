@@ -8,10 +8,10 @@ import org.hibernate.annotations.FetchMode;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
 @Setter
 @Builder
 @NoArgsConstructor
+@Getter
 @AllArgsConstructor
 @Entity
 public class Driver extends BaseModel{
