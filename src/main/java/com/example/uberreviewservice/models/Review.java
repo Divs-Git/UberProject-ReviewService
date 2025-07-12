@@ -24,7 +24,7 @@ public class Review extends BaseModel {
     @Column(name = "rating")
     private Double rating;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Booking booking;
 
