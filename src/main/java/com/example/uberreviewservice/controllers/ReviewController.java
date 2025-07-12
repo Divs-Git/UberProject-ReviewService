@@ -5,6 +5,8 @@ import com.example.uberreviewservice.dtos.CreateReviewDto;
 import com.example.uberreviewservice.dtos.ReviewDto;
 import com.example.uberreviewservice.models.Review;
 import com.example.uberreviewservice.services.ReviewService;
+import com.example.uberreviewservice.utils.ReviewDtoMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +30,9 @@ public class ReviewController {
     @GetMapping("/{id}")
     public ResponseEntity<?> findAllReviewById(@PathVariable Long id) {
         try {
-            Optional<Review> review = reviewService.findReviewById(id);
-            return new ResponseEntity<>(review, HttpStatus.OK);
+            Review review = reviewService.findReviewById(id).orElseThrow(() -> new EntityNotFoundException("Review with given id not found"));
+            ReviewDto reviewDto = ReviewDtoMapper.convert(review);
+            return new ResponseEntity<>(reviewDto,HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
@@ -42,15 +45,7 @@ public class ReviewController {
         List<ReviewDto> reviewDtos = new ArrayList<>();
 
         for(Review review: reviews) {
-            reviewDtos.add(ReviewDto
-                    .builder()
-                    .id(review.getId())
-                    .reviewContent(review.getReviewContent())
-                    .bookingId(review.getBooking().getId())
-                    .rating(review.getRating())
-                    .createdAt(review.getCreatedAt())
-                    .updatedAt(review.getUpdatedAt())
-                    .build());
+            reviewDtos.add(ReviewDtoMapper.convert(review));
         }
 
         return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
@@ -71,23 +66,24 @@ public class ReviewController {
             return new ResponseEntity<>("Invalid argument", HttpStatus.BAD_REQUEST);
         }
         Review newReview = reviewService.publishReview(incomingReview);
-        ReviewDto response = ReviewDto
-                .builder()
-                .id(newReview.getId())
-                .reviewContent(newReview.getReviewContent())
-                .bookingId(newReview.getBooking().getId())
-                .rating(newReview.getRating())
-                .createdAt(newReview.getCreatedAt())
-                .updatedAt(newReview.getUpdatedAt())
-                .build();
+        ReviewDto response = ReviewDtoMapper.convert(newReview);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateReview(@PathVariable Long id, @RequestBody Review review) {
+    public ResponseEntity<?> updateReview(@PathVariable Long id, @RequestBody CreateReviewDto review) {
         try {
-            Review updatedReview = reviewService.updateReview(id, review);
-            return new ResponseEntity<>(updatedReview, HttpStatus.OK);
+            Review reviewToUpdate = createReviewDtoToReviewAdapter.convertDto(review);
+
+            if (reviewToUpdate == null) {
+                return new ResponseEntity<>("Invalid argument", HttpStatus.BAD_REQUEST);
+            }
+
+            Review updatedReview = reviewService.updateReview(id, reviewToUpdate);
+
+            ReviewDto response = ReviewDtoMapper.convert(updatedReview);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
